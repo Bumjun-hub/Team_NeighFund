@@ -11,8 +11,6 @@ import org.project.neighfund.domain.Role.RoleRepository;
 import org.project.neighfund.domain.member.Member;
 import org.project.neighfund.domain.member.MemberRepository;
 import org.project.neighfund.enums.RoleName;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
