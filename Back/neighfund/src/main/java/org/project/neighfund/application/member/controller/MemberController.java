@@ -4,7 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.project.neighfund.application.member.dto.*;
+import org.project.neighfund.application.member.dto.LoginTypeResponse;
+import org.project.neighfund.application.member.dto.RoleInfoResponse;
+import org.project.neighfund.application.member.dto.SignupRequest;
+import org.project.neighfund.application.member.dto.SignupResponse;
 import org.project.neighfund.config.CustomUserDetails;
 import org.project.neighfund.domain.member.Member;
 import org.project.second.member.dto.LoginRequest;
@@ -24,9 +27,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,62 +114,6 @@ public class MemberController {
         memberService.deleteMember(member);
         jwtProvider.clearTokensInCookies(response);
         return ResponseEntity.ok("계정이 정상적으로 삭제되었습니다.");
-    }
-
-    @PostMapping("/mypage/upload")
-    public ResponseEntity<String> uploadProfileImage(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestPart("file") MultipartFile file) {
-        try {
-            memberService.uploadProfileImage(userDetails.getMember(), file);
-            return ResponseEntity.ok("프로필 이미지가 업로드 되었습니다.");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("파일 업로드에 실패했습니다: " + e.getMessage());
-        }
-    }
-
-    @PutMapping("/mypage/editProfile")
-    public ResponseEntity<?> editProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                         @RequestBody EditProfileRequest editProfileRequest, HttpServletResponse response) {
-        try {
-            Member member = userDetails.getMember();
-            Member updatedMember = memberService.editProfile(member, editProfileRequest);
-
-            CustomUserDetails updatedUserDetails = new CustomUserDetails(updatedMember);
-
-            // 토큰 재 생성을 위해 Authentication 재설정
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    updatedUserDetails, null, updatedUserDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            jwtProvider.clearTokensInCookies(response);
-            String newAccessToken = jwtProvider.generateAccessToken(authentication);
-            String newRefreshToken = jwtProvider.generateRefreshToken(authentication);
-            jwtProvider.setTokensInCookies(response, newAccessToken, newRefreshToken);
-
-            return ResponseEntity.ok(new EditProfileResponse("프로필 변경 완료", updatedMember.getUsername(), updatedMember.getEmail(), updatedMember.getPhone(), updatedMember.getAddress(), updatedMember.getDongName()));
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse("서버 오류가 발생했습니다."));
-        }
-    }
-
-    @PostMapping("mypage/checkPwd")
-    public ResponseEntity<String> checkPassword(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                @RequestBody CheckPasswordRequest pwdRequest) {
-        Member m = userDetails.getMember();
-        String password = pwdRequest.getPassword();
-        boolean result = memberService.checkPassword(m, password);
-
-        if (result) {
-            return ResponseEntity.ok("비밀번호 일치");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다");
-        }
     }
 
     @GetMapping("/roleinfo")

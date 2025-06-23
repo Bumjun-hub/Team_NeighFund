@@ -1,4 +1,4 @@
-package org.project.neighfund.application.oAuth.dto;
+package org.project.neighfund.application.OAuth.dto;
 
 
 import lombok.Builder;
