@@ -1,10 +1,10 @@
-package org.project.neighfund.application.OAuth.service;
+package org.project.neighfund.application.oAuth.service;
 
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.neighfund.application.OAuth.dto.OAuthAttributesDto;
+import org.project.neighfund.application.oAuth.dto.OAuthAttributesDto;
 import org.project.neighfund.domain.Role.Role;
 import org.project.neighfund.domain.Role.RoleRepository;
 import org.project.neighfund.domain.member.Member;

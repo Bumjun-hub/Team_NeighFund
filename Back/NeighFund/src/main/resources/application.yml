@@ -29,7 +29,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
 
-  jackson: #enum ?? ????
+  jackson:
     mapper:
       accept-case-insensitive-enums: true
   jpa:
@@ -51,7 +51,6 @@ spring:
 
 file:
   upload-dir: uploads
-  profile-images-dir: static/profileimages
 
 jwt:
   access:
