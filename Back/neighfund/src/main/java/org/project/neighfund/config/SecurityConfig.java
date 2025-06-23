@@ -2,7 +2,7 @@ package org.project.neighfund.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.neighfund.application.OAuth.service.CustomOAuth2UserService;
+import org.project.neighfund.application.oAuth.service.CustomOAuth2UserService;
 import org.project.neighfund.application.member.service.CustomUserDetailsService;
 import org.project.neighfund.security.JwtAuthenticationEntryPoint;
 import org.project.neighfund.security.JwtAuthenticationFilter;
