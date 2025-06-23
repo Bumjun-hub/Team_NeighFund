@@ -51,7 +51,6 @@ spring:
 
 file:
   upload-dir: uploads
-  profile-images-dir: static/profileimages
 
 jwt:
   access:

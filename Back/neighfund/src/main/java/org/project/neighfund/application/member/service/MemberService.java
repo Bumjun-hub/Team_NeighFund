@@ -11,11 +11,19 @@ import org.project.neighfund.domain.Role.RoleRepository;
 import org.project.neighfund.domain.member.Member;
 import org.project.neighfund.domain.member.MemberRepository;
 import org.project.neighfund.enums.RoleName;
+import org.project.neighfund.global.image.ImageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +31,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ImageService imageService;
 
     public SignupResponse insert(@Valid SignupRequest signupRequest) {
         if (memberRepository.existsByEmail(signupRequest.getEmail())){
@@ -61,6 +70,50 @@ public class MemberService {
 
     public void deleteMember(Member member) {
         memberRepository.delete(member);
+    }
+
+    public void uploadProfileImage(Member member, MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("업로드할 파일이 없습니다.");
+        }
+
+        if (!file.getContentType().startsWith("image/")) {
+            throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
+        }
+
+        // 사용자별 디렉토리 생성 (예: /uploads/user@example.com/)
+        String relativePath = "/uploads/" + member.getEmail();
+        String absolutePath = imageService.getAbsolutePath() + File.separator + member.getEmail();
+        Files.createDirectories(Paths.get(absolutePath));
+
+        // 기존 DB랑 디렉토리에 path랑 이미지가 있으면 삭제
+        if (member.getImageUrl() != null) {
+            try {
+                // 삭제 시에는 절대경로로 변환해서 삭제
+                String existingImagePath = member.getImageUrl().replace("/", File.separator);  // 상대 경로 처리
+                if (!existingImagePath.startsWith(System.getProperty("user.dir"))) {  // 절대경로 중복 방지
+                    existingImagePath = System.getProperty("user.dir") + existingImagePath;
+                }
+                Files.deleteIfExists(Paths.get(existingImagePath));
+            } catch (IOException e) {
+                System.err.println("기존 프로필 이미지 삭제 실패: " + e.getMessage());
+            }
+        }
+
+        // 파일 이름 생성 (중복 방지를 위해 UUID 사용)
+        String originalFileName = file.getOriginalFilename(); // image1
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")); // .jpg
+        String newFileName = UUID.randomUUID().toString() + fileExtension; // 1sd2fsf4fdfsdf.jpg
+
+        String savedAbsoluteFilePath = absolutePath + File.separator + newFileName;
+        String savedRelativePath = relativePath + "/" + newFileName;
+
+        // 파일 저장
+        file.transferTo(new File(savedAbsoluteFilePath));
+
+        // Member 엔티티에 파일 경로 저장
+        member.setImageUrl(savedRelativePath);
+        memberRepository.save(member);
     }
 
     public RoleInfoResponse getRoleInfo(Member m) {

@@ -27,7 +27,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,6 +116,18 @@ public class MemberController {
         memberService.deleteMember(member);
         jwtProvider.clearTokensInCookies(response);
         return ResponseEntity.ok("계정이 정상적으로 삭제되었습니다.");
+    }
+
+    @PostMapping("/mypage/upload")
+    public ResponseEntity<String> uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart("file") MultipartFile file) {
+        try {
+            memberService.uploadProfileImage(userDetails.getMember(), file);
+            return ResponseEntity.ok("프로필 이미지가 업로드 되었습니다.");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("파일 업로드에 실패했습니다: " + e.getMessage());
+        }
     }
 
     @GetMapping("/roleinfo")
