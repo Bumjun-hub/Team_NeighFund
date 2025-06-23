@@ -20,23 +20,25 @@ const SuggestionPage = () => {
     return (
         <div className="suggestion-wrapper">
             <div className="suggestion-header">
-                <h2>제안</h2>
+                <div className="suggestion-title">
+                    <h2>제안</h2>
+                </div>
                 <div className="filters">
                     <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
                         <option value="최신순">최신순</option>
                         <option value="공감순">공감순</option>
                     </select>
-                    <button onClick={() => setCategoryFilter('환경')}>환경</button>
-                    <button onClick={() => setCategoryFilter('생활환경')}>생활환경</button>
-                    <button onClick={() => setCategoryFilter('교육')}>교육</button>
-                    <button onClick={() => setCategoryFilter('전체')}>전체</button>
-                    <button className="write-button">제안 글쓰기</button>
+                    <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+                        <option value="전체">전체</option>
+                        <option value="환경">환경</option>
+                        <option value="교육">교육</option>
+                    </select>
                 </div>
             </div>
 
             <div className="suggestion-list">
                 {filtered.map((item) => (
-                    <div key={item.id} className="suggestion-card">
+                    <div key={item.id} className="suggestion-card" data-category={item.category}>
                         <div className="category">#{item.category}</div>
                         <div className="title">{item.title}</div>
                         <div className="content">{item.content}</div>
