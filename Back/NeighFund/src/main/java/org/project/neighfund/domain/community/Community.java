@@ -2,7 +2,9 @@ package org.project.neighfund.domain.community;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.project.neighfund.domain.comment.Comment;
 import org.project.neighfund.domain.common.BaseEntity;
+import org.project.neighfund.domain.like.Like;
 import org.project.neighfund.domain.member.Member;
 import org.project.neighfund.enums.CommunityCategory;
 import org.project.neighfund.enums.CommunityStatus;
@@ -15,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Community extends BaseEntity { // 제안
+public class Community extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
