@@ -2,7 +2,7 @@ package org.project.neighfund.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.neighfund.application.OAuth.service.CustomOAuth2UserService;
+import org.project.neighfund.application.oAuth.service.CustomOAuth2UserService;
 import org.project.neighfund.application.member.service.CustomUserDetailsService;
 import org.project.neighfund.security.JwtAuthenticationEntryPoint;
 import org.project.neighfund.security.JwtAuthenticationFilter;
@@ -41,8 +41,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/signup", "/api/login").permitAll()
-                        .requestMatchers("/uploads/**", "/static/**","/profileimages/**").permitAll() // 이미지 경로
+                        .requestMatchers(HttpMethod.POST, "/api/auth/signup", "/api/auth/login").permitAll()
+                        .requestMatchers("api/auth/**").authenticated()
+                        .requestMatchers("/uploads/**").permitAll() // 이미지 경로
                         .requestMatchers("/login/oauth2/**", "/api/Oauth/**", "/oauth2/**").permitAll() // social login api 허용
                         .requestMatchers("/ws/**").authenticated()// 웹소켓 엔드포인트 허용
                         .anyRequest().authenticated()
