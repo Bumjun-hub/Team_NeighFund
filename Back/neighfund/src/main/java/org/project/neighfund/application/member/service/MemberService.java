@@ -2,10 +2,7 @@ package org.project.neighfund.application.member.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.project.neighfund.application.member.dto.LoginTypeResponse;
-import org.project.neighfund.application.member.dto.RoleInfoResponse;
-import org.project.neighfund.application.member.dto.SignupRequest;
-import org.project.neighfund.application.member.dto.SignupResponse;
+import org.project.neighfund.application.member.dto.*;
 import org.project.neighfund.domain.Role.Role;
 import org.project.neighfund.domain.Role.RoleRepository;
 import org.project.neighfund.domain.member.Member;
@@ -114,6 +111,40 @@ public class MemberService {
         // Member 엔티티에 파일 경로 저장
         member.setImageUrl(savedRelativePath);
         memberRepository.save(member);
+    }
+
+    public Member editProfile(Member member, EditProfileRequest editProfileRequest) {
+        Optional<Member> OpUser = memberRepository.findByEmail(member.getEmail());
+        if (OpUser.isPresent()) {
+            Member m = OpUser.get();
+            if (!editProfileRequest.getName().equals(m.getUsername())
+                    && memberRepository.existsByUsername(editProfileRequest.getName())) {
+                throw new IllegalArgumentException("이미 존재하는 유저네임 입니다.");
+            }
+
+            m.setUsername(editProfileRequest.getName());
+            m.setEmail(editProfileRequest.getEmail());
+            m.setAddress(editProfileRequest.getAddress());
+            m.setDongName(editProfileRequest.getDongName());
+            m.setPhone(editProfileRequest.getPhone());
+
+            return memberRepository.save(m);
+        }
+        throw new IllegalArgumentException("등록되어 있지 않은 이메일입니다.");
+    }
+
+    public boolean checkPassword(Member m, String password) {
+        Optional<Member>  opUser = memberRepository.findById(m.getId());
+        if (opUser.isPresent()) {
+            Member member = opUser.get();
+
+            if (!passwordEncoder.matches(password, member.getPassword())) {
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            }
+
+            return true;
+        }
+        return false;
     }
 
     public RoleInfoResponse getRoleInfo(Member m) {
