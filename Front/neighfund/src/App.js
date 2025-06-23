@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import MainPage from './pages/mainpage/MainPage';
 import SuggestionPage from './pages/suggestionspage/SuggestionPage';
 import SuggestionWritePage from './pages/suggestionspage/SuggestionWritePage';
+import FundPage from './pages/fundpage/FundPage';
 
 function App() {
   return (
@@ -13,6 +14,8 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/suggestion" element={<SuggestionPage />} />
           <Route path="/suggestion/write" element={<SuggestionWritePage />} />
+
+          <Route path="/fund" element={<FundPage />} />
         </Route>
       </Routes>
     </div>
